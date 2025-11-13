@@ -1,0 +1,11 @@
+# PHP
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*~
+*.swp
+*.swo
