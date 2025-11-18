@@ -1,0 +1,8 @@
+# Block access to git files
+<DirectoryMatch "\.git">
+    Require all denied
+</DirectoryMatch>
+
+<Files ~ "^\.(git|gitignore)">
+    Require all denied
+</Files>
