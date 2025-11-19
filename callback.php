@@ -48,7 +48,17 @@ if (isset($_GET['code'])) {
         'grant_type' => 'authorization_code'
     ];
     
-    $ch = curl_init('https://oauth2.googleapis.com/token');
+    $token_endpoint = $_SESSION['token_endpoint'] ?? 'https://oauth2.googleapis.com/token';
+
+    if (!filter_var($token_endpoint, FILTER_VALIDATE_URL)) {
+      die('Invalid token endpoint URL');
+    }
+
+    if (parse_url($token_endpoint, PHP_URL_SCHEME) !== 'https') {
+      die('Token endpoint must use HTTPS');
+    }
+
+    $ch = curl_init($token_endpoint);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
