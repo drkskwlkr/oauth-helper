@@ -17,12 +17,23 @@ For API testing, prototyping, or small-scale integrations, this infrastructure i
 
 OAuth Helper provides a simple web interface to:
 
-1. **Initial Setup**: Enter your OAuth client credentials (Client ID, Client Secret, Redirect URI, and API scopes) through a web form
-2. **Authorization**: Generate an authorization URL and authenticate with the OAuth provider (e.g., Google)
+1. **Initial Setup**: Select from pre-configured OAuth providers or enter custom credentials (Client ID, Client Secret, Redirect URI, and API scopes)
+2. **Authorization**: Generate an authorization URL and authenticate with the OAuth provider
 3. **Token Generation**: Exchange the authorization code for a refresh token (long-lived) and access token (short-lived)
 4. **Token Renewal**: Use your saved refresh token to generate fresh access tokens whenever needed
 
 All credentials are stored in PHP sessions - nothing is persisted to disk or databases. When you close your browser, the session ends and credentials are cleared.
+
+## Features
+
+- No credential storage - session-based only
+- **Pre-configured provider presets** for popular OAuth platforms (Google, GitHub, Microsoft, Facebook, LinkedIn, Spotify)
+- **Customizable OAuth endpoints** - works with any OAuth 2.0 provider
+- **Direct links to provider documentation** for easy reference
+- Generate refresh tokens once, reuse forever
+- Auto-detected redirect URIs based on deployment domain
+- Clean Bootstrap 5 interface
+- URL validation for security
 
 ## Use Cases
 
@@ -55,10 +66,10 @@ For lightweight integrations where full OAuth infrastructure isn't justified:
 
 OAuth Helper implements the standard OAuth 2.0 authorization code flow:
 
-1. **User provides credentials**: You enter your OAuth client ID, client secret, redirect URI, and the API scope you want to access
+1. **User provides credentials**: Select a provider preset or enter custom OAuth client ID, client secret, redirect URI, and the API scope you want to access
 2. **Authorization URL generation**: The tool constructs a proper OAuth authorization URL with all required parameters
-3. **User authorization**: You visit the authorization URL, sign in with your account (e.g., Google), and grant permissions
-4. **Code exchange**: Google redirects back to the callback URL with an authorization code, which the tool exchanges for tokens
+3. **User authorization**: You visit the authorization URL, sign in with your account, and grant permissions
+4. **Code exchange**: The provider redirects back to the callback URL with an authorization code, which the tool exchanges for tokens
 5. **Token storage**: You receive both a refresh token (save this!) and an access token (valid ~1 hour)
 6. **Token renewal**: Later, paste your refresh token to generate new access tokens without re-authorizing
 
@@ -68,6 +79,7 @@ OAuth Helper implements the standard OAuth 2.0 authorization code flow:
 - **No persistence**: Credentials disappear when you close your browser
 - **User-controlled**: You provide your own OAuth client credentials - the tool never sees or stores them permanently
 - **HTTPS required**: All OAuth flows must use HTTPS to prevent credential interception
+- **URL validation**: Authorization, token, and redirect URIs are validated to ensure they're valid HTTPS URLs
 
 ## Installation
 
@@ -83,7 +95,7 @@ OAuth Helper implements the standard OAuth 2.0 authorization code flow:
 1. **Upload files to your web server**
 ```bash
    # Via FTP, or if you have SSH access:
-   git clone https://github.com/yourusername/oauth-helper.git
+   git clone https://github.com/drkskwlkr/oauth-helper.git
    cd oauth-helper
 ```
 
@@ -111,17 +123,22 @@ OAuth Helper implements the standard OAuth 2.0 authorization code flow:
 1. **Visit setup.php**
    Navigate to the setup page on your deployed instance
 
-2. **Enter OAuth credentials**
+2. **Select OAuth provider and enter credentials**
+   - **Select Provider**: Choose from the dropdown (Google, GitHub, Microsoft, etc.) or select "Custom Provider"
+   - Provider presets automatically populate endpoint URLs and example scopes
    - **Client ID**: From your OAuth client configuration (e.g., Google Cloud Console)
    - **Client Secret**: The secret key associated with your client ID
-   - **Redirect URI**: Must match exactly what's configured in your OAuth client (e.g., `https://your-domain.com/callback.php`)
-   - **Scope**: The API permissions you need (e.g., `https://www.googleapis.com/auth/business.manage` for Google Business Profile)
+   - **Redirect URI**: Auto-detected based on your domain, must match exactly what's configured in your OAuth client
+   - **Scope**: Pre-filled example for selected provider - replace with the API permissions you need (space-separated)
+   - **Authorization Endpoint**: Auto-filled from provider preset (or enter custom URL)
+   - **Token Endpoint**: Auto-filled from provider preset (or enter custom URL)
+   - Click the documentation link below the provider dropdown for scope details
 
 3. **Click "Save & Generate Authorization URL"**
    The tool saves your credentials in the session and generates an authorization URL
 
 4. **Authorize with the provider**
-   Click the authorization button. You'll be redirected to the OAuth provider (e.g., Google) where you:
+   Click the authorization button. You'll be redirected to the OAuth provider where you:
    - Sign in with your account
    - Review the permissions being requested
    - Grant access to your application
@@ -173,81 +190,97 @@ fetch('https://api.example.com/endpoint', {
 })
 ```
 
+## Customizing Providers
+
+The tool includes pre-configured providers in `providers.json`. You can:
+
+- **Add new providers**: Edit `providers.json` and add entries with required endpoints
+- **Modify existing providers**: Update endpoint URLs or scope examples
+- **Contribute**: Submit PRs with new provider configurations to help other users
+
+### Provider Configuration Format
+```json
+{
+  "provider_key": {
+    "name": "Display Name",
+    "auth_endpoint": "https://provider.com/oauth/authorize",
+    "token_endpoint": "https://provider.com/oauth/token",
+    "scope_example": "scope1 scope2 scope3",
+    "docs_url": "https://provider.com/docs/oauth"
+  }
+}
+```
+
+**Fields:**
+- `name`: Human-readable provider name shown in dropdown
+- `auth_endpoint`: OAuth authorization endpoint URL
+- `token_endpoint`: Token exchange endpoint URL
+- `scope_example`: Example scopes (space-separated) for this provider
+- `docs_url`: Link to provider's OAuth documentation
+
+### Example: Adding a New Provider
+
+To add Dropbox support, edit `providers.json`:
+```json
+{
+  "dropbox": {
+    "name": "Dropbox",
+    "auth_endpoint": "https://www.dropbox.com/oauth2/authorize",
+    "token_endpoint": "https://api.dropboxapi.com/oauth2/token",
+    "scope_example": "account_info.read files.content.read",
+    "docs_url": "https://developers.dropbox.com/oauth-guide"
+  }
+}
+```
+
+Save the file and the new provider will appear in the dropdown.
+
 ## Supported OAuth Providers
 
-This tool works with any OAuth 2.0 provider that follows the standard authorization code flow:
+This tool works with any OAuth 2.0 provider that follows the standard authorization code flow. Pre-configured providers include:
 
 - **Google APIs** (Business Profile, Gmail, Drive, Calendar, etc.)
+- **GitHub** (Repository access, user data, etc.)
 - **Microsoft Graph API** (Office 365, Azure AD, etc.)
 - **Facebook Graph API**
-- **GitHub API**
 - **LinkedIn API**
 - **Spotify API**
-- Any other OAuth 2.0 compliant service
 
 ### Provider-Specific Notes
 
 **Google APIs:**
-- Token endpoint: `https://oauth2.googleapis.com/token` (default)
 - Scopes are space-separated URLs (e.g., `https://www.googleapis.com/auth/business.manage`)
 - Access tokens valid for 3600 seconds (1 hour)
+- Some APIs require project approval before use
+
+**GitHub:**
+- Scopes use space-separated identifiers (e.g., `repo user`)
+- Personal access tokens are an alternative for some use cases
 
 **Microsoft Graph:**
-- Token endpoint: `https://login.microsoftonline.com/common/oauth2/v2.0/token`
 - Scopes use space-separated identifiers (e.g., `User.Read Mail.Read`)
+- Supports both personal and work/school accounts
 
-**Facebook:**
-- Token endpoint: `https://graph.facebook.com/v18.0/oauth/access_token`
-- Different parameter names may require code modifications
-
-## Security Considerations
-
-### What This Tool Does NOT Do
-
-- **Does not store credentials permanently**: Everything is session-based
-- **Does not transmit credentials to third parties**: All OAuth exchanges happen directly between your browser and the OAuth provider
-- **Does not log tokens**: No logging of sensitive credentials or tokens
-- **Does not expose credentials in URLs**: OAuth secrets are sent via POST, not GET parameters
-
-### Best Practices
-
-1. **Deploy on HTTPS only**: OAuth requires secure connections
-2. **Restrict access**: Use `.htaccess` password protection or firewall rules to limit who can access the tool
-3. **Use for development/testing**: Not recommended for production token management at scale
-4. **Rotate credentials regularly**: If you suspect credential compromise, revoke and regenerate OAuth clients
-5. **Don't commit tokens to git**: Never check refresh tokens or access tokens into version control
-
-### Threat Model
-
-**Protected against:**
-- Credential theft via network interception (HTTPS)
-- Accidental credential persistence (session-only storage)
-- Unauthorized access to your OAuth applications (requires your client credentials)
-
-**Not protected against:**
-- Server compromise (if attacker has shell access, they can read PHP sessions)
-- XSS attacks (no JavaScript, but keep server patched)
-- Physical access to your computer while session is active
-
-**Recommended for:** Internal tools, development environments, testing scenarios
-**Not recommended for:** Public-facing applications, high-security production environments, applications requiring audit trails
+**Custom Providers:**
+- Select "Custom Provider" from dropdown
+- Manually enter all endpoint URLs and scopes
+- Ensure provider follows OAuth 2.0 authorization code flow
 
 ## Files
 
 - `index.php` - Landing page with tool description
-- `setup.php` - Configuration form for entering OAuth credentials
+- `setup.php` - Configuration form for entering OAuth credentials and selecting providers
 - `callback.php` - Handles OAuth callbacks and token generation/renewal
+- `providers.json` - Provider presets with endpoints and documentation links
 - `policy.php` - Privacy policy page
 - `tos.php` - Terms of service page
+- `.htaccess` - Blocks access to git files when deployed via symlink
 
 ## Configuration
 
-No configuration files needed. All settings are provided through the web interface.
+No server-side configuration files needed. All settings are provided through the web interface.
 
-If deploying for a specific OAuth provider, you can pre-fill default values by modifying the form defaults in `setup.php`:
-```php
-<input type="text" name="scope" value="https://www.googleapis.com/auth/business.manage" required>
-```
+Provider presets are stored in `providers.json` and can be customized by editing the file directly.
 
 ## Troubleshooting
 
@@ -267,21 +300,25 @@ If deploying for a specific OAuth provider, you can pre-fill default values by m
 **Problem**: Access token expired or incorrect format.
 **Solution**: Generate a fresh token. Ensure you're using `Bearer TOKEN` format in Authorization header (note the space after "Bearer").
 
+### Invalid token endpoint / authorization endpoint
+**Problem**: URL validation fails on custom endpoints.
+**Solution**: Ensure endpoints are valid HTTPS URLs. HTTP is not allowed for security.
+
 ## Example: Google Business Profile API
 
 Here's a complete workflow for accessing Google Business Profile reviews:
 
 1. **Create OAuth Client**
    - Go to Google Cloud Console
-   - Enable "Google My Business API" and "Business Profile Performance API"
+   - Enable "My Business Business Information API" and "Business Profile Performance API"
    - Create OAuth 2.0 credentials
    - Add redirect URI: `https://oauth-helper.yourdomain.com/callback.php`
 
 2. **Get Refresh Token**
    - Visit `setup.php`
+   - Select "Google APIs" from provider dropdown
    - Enter Client ID and Client Secret
-   - Redirect URI: `https://oauth-helper.yourdomain.com/callback.php`
-   - Scope: `https://www.googleapis.com/auth/business.manage`
+   - Scope is pre-filled: `https://www.googleapis.com/auth/business.manage`
    - Authorize and save refresh token
 
 3. **Get Access Token**
@@ -307,6 +344,9 @@ Want to extend this tool? Some ideas:
 - Built-in API testing interface
 - Support for PKCE (Proof Key for Code Exchange) flow
 - Integration with browser extensions for auto-token injection
+- Add more provider presets
+
+Pull requests welcome!
 
 ## License
 
@@ -314,7 +354,14 @@ MIT License - feel free to modify and use as needed.
 
 ## Contributing
 
-Contributions welcome! Please open issues for bugs or feature requests.
+Contributions welcome! Areas where help is appreciated:
+
+- Adding new provider presets to `providers.json`
+- Improving documentation
+- Bug fixes and security improvements
+- UI/UX enhancements
+
+Please open issues for bugs or feature requests.
 
 ## Disclaimer
 
@@ -322,8 +369,8 @@ This tool is provided as-is without warranties. It's designed for development an
 
 ## Author
 
-Created to solve the OAuth token management pain during API development and testing.
+Created by drkskwlkr to solve the OAuth token management pain during API development and testing.
 
 ---
 
-**Privacy Note**: This tool does not collect, store, or transmit any personal information or API credentials to external servers. All OAuth operations occur directly between your browser and the OAuth provider (e.g., Google). Credentials are stored temporarily in PHP sessions and cleared when you close your browser.
+**Privacy Note**: This tool does not collect, store, or transmit any personal information or API credentials to external servers. All OAuth operations occur directly between your browser and the OAuth provider. Credentials are stored temporarily in PHP sessions and cleared when you close your browser.
