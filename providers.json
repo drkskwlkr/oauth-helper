@@ -1,0 +1,51 @@
+{
+  "google": {
+    "name": "Google APIs",
+    "auth_endpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+    "token_endpoint": "https://oauth2.googleapis.com/token",
+    "scope_example": "https://www.googleapis.com/auth/userinfo.email",
+    "docs_url": "https://developers.google.com/identity/protocols/oauth2"
+  },
+  "github": {
+    "name": "GitHub",
+    "auth_endpoint": "https://github.com/login/oauth/authorize",
+    "token_endpoint": "https://github.com/login/oauth/access_token",
+    "scope_example": "repo user",
+    "docs_url": "https://docs.github.com/en/apps/oauth-apps"
+  },
+  "microsoft": {
+    "name": "Microsoft Graph",
+    "auth_endpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+    "token_endpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+    "scope_example": "User.Read Mail.Read",
+    "docs_url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow"
+  },
+  "facebook": {
+    "name": "Facebook",
+    "auth_endpoint": "https://www.facebook.com/v18.0/dialog/oauth",
+    "token_endpoint": "https://graph.facebook.com/v18.0/oauth/access_token",
+    "scope_example": "email public_profile",
+    "docs_url": "https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow"
+  },
+  "linkedin": {
+    "name": "LinkedIn",
+    "auth_endpoint": "https://www.linkedin.com/oauth/v2/authorization",
+    "token_endpoint": "https://www.linkedin.com/oauth/v2/accessToken",
+    "scope_example": "r_liteprofile r_emailaddress",
+    "docs_url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication"
+  },
+  "spotify": {
+    "name": "Spotify",
+    "auth_endpoint": "https://accounts.spotify.com/authorize",
+    "token_endpoint": "https://accounts.spotify.com/api/token",
+    "scope_example": "user-read-private user-read-email",
+    "docs_url": "https://developer.spotify.com/documentation/web-api/tutorials/code-flow"
+  },
+  "custom": {
+    "name": "Custom Provider",
+    "auth_endpoint": "",
+    "token_endpoint": "",
+    "scope_example": "",
+    "docs_url": ""
+  }
+}
