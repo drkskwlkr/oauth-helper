@@ -14,11 +14,15 @@
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="card shadow-sm">
-		    <div class="card-body p-5 text-center">
-			<h1 class="card-title mb-4">OAuth Helper</h1>
-			<p class="lead mb-4">Generate OAuth 2.0 tokens for any API provider without hardcoded credentials.</p>
-			<p class="text-muted mb-4">Supports Google, GitHub, Microsoft, Facebook, LinkedIn, Spotify, and custom OAuth providers.</p>
-			<a href="setup.php" class="btn btn-primary btn-lg">Get Started</a>
+                    <div class="card-body p-5 text-center">
+                        <h1 class="card-title mb-4">OAuth Helper</h1>
+                        <p class="lead mb-4">Generate OAuth 2.0 tokens for any API provider without hardcoded credentials.</p>
+                        <p class="text-muted mb-4">Supports Google, GitHub, Microsoft, Facebook, LinkedIn, Spotify, and custom OAuth providers.</p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="setup.php" class="btn btn-primary btn-lg">Get Started (New Setup)</a>
+                            <a href="generate.php" class="btn btn-outline-secondary">Generate Token (Have Refresh Token)</a>
+                        </div>
                     </div>
                 </div>
             </div>
