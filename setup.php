@@ -33,22 +33,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Invalid redirect URI. Must be a valid HTTPS URL.');
     }
     
-    // Store validated values
-    $_SESSION['client_id'] = trim($_POST['client_id']);
-    $_SESSION['client_secret'] = trim($_POST['client_secret']);
+    // Generate random state token
+    $state = bin2hex(random_bytes(16));
+    $_SESSION['oauth_state'] = $state;
+    
+    $client_id = trim($_POST['client_id']);
+    $client_secret = trim($_POST['client_secret']);
+    $scope = trim($_POST['scope']);
+
+    $_SESSION['client_id'] = $client_id;
+    $_SESSION['client_secret'] = $client_secret;
     $_SESSION['redirect_uri'] = $redirect_uri;
-    $_SESSION['scope'] = trim($_POST['scope']);
+    $_SESSION['scope'] = $scope;
     $_SESSION['auth_endpoint'] = $auth_endpoint;
     $_SESSION['token_endpoint'] = $token_endpoint;
-    
+
     // Generate authorization URL
-    $auth_url = $_SESSION['auth_endpoint'] . '?' . http_build_query([
-        'client_id' => $_SESSION['client_id'],
-        'redirect_uri' => $_SESSION['redirect_uri'],
-        'response_type' => 'code',
-        'scope' => $_SESSION['scope'],
-        'access_type' => 'offline',
-        'prompt' => 'consent'
+    $auth_url = $auth_endpoint . '?' . http_build_query([
+      'client_id' => $client_id,
+      'redirect_uri' => $redirect_uri,
+      'response_type' => 'code',
+      'scope' => $scope,
+      'access_type' => 'offline',
+      'prompt' => 'consent',
+      'state' => $state,
     ]);
     ?>
     <!DOCTYPE html>

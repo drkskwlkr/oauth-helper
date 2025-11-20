@@ -38,6 +38,15 @@ if (!$client_id || !$client_secret || !$redirect_uri) {
 
 // Handle initial authorization (exchange code for tokens)
 if (isset($_GET['code'])) {
+    $returned_state = $_GET['state'] ?? '';
+    $stored_state = $_SESSION['oauth_state'] ?? '';
+    
+    if (empty($returned_state) || $returned_state !== $stored_state) {
+        die('Invalid state parameter. Possible CSRF attack.');
+    }
+    
+    unset($_SESSION['oauth_state']);
+
     $auth_code = $_GET['code'];
     
     $data = [
@@ -48,7 +57,11 @@ if (isset($_GET['code'])) {
         'grant_type' => 'authorization_code'
     ];
     
-    $token_endpoint = $_SESSION['token_endpoint'] ?? 'https://oauth2.googleapis.com/token';
+    $token_endpoint = $_SESSION['token_endpoint'] ?? null;
+
+    if (!$token_endpoint) {
+      die('Error: Token endpoint not found in session. Please start from setup.php');
+    }
 
     if (!filter_var($token_endpoint, FILTER_VALIDATE_URL)) {
       die('Invalid token endpoint URL');
