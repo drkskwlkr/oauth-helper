@@ -16,8 +16,8 @@
                 <div class="card shadow-sm">
                     <div class="card-body p-5 text-center">
                         <h1 class="card-title mb-4">OAuth Helper</h1>
-                        <p class="lead mb-4">Generate OAuth 2.0 tokens for any API provider without hardcoded credentials.</p>
-                        <p class="text-muted mb-4">Supports Google, GitHub, Microsoft, Facebook, LinkedIn, Spotify, and custom OAuth providers.</p>
+                        <p class="lead mb-4">Generate OAuth 2.0 tokens for any API provider.</p>
+                        <p class="text-muted mb-4">Pre-configured to support Google, GitHub, Microsoft, Facebook, LinkedIn, Spotify out of the box. Data for other OAuth providers can be used ad hoc or added permanently to the included <strong>providers.json</strong> file.</p>
                         
                         <div class="d-grid gap-2">
                             <a href="setup.php" class="btn btn-primary btn-lg">Get Started (New Setup)</a>
