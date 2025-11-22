@@ -2,6 +2,10 @@
 
 A lightweight PHP tool for generating and managing OAuth 2.0 access tokens without hardcoding credentials. Designed for developers who need to work with OAuth-protected APIs during development, testing, or in production environments where manual token management is acceptable.
 
+## Live Demo
+
+Try the tool at: **[https://oauth-helper.totalbuzzkit.cc](https://oauth-helper.totalbuzzkit.cc)**
+
 ## The Problem This Solves
 
 When working with OAuth 2.0 APIs like Google Business Profile, Microsoft Graph, or Facebook Graph API, developers face a common challenge: OAuth tokens expire (typically after 1 hour), but the refresh tokens used to generate new access tokens are long-lived. Managing this token lifecycle typically requires:
